@@ -6,7 +6,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/node:latest
+      - image: cimg/node:16.15.0
     working_directory: ~/dockerDirectory
     steps:
       - checkout
@@ -30,7 +30,7 @@ jobs:
 
   deploy-to-aws-s3:
     docker:
-      - image: cimg/node:latest
+      - image: cimg/node:16.15.0
     working_directory: ~/cinema-circleci
     steps:
       - checkout
@@ -67,7 +67,7 @@ jobs:
 
   deploy-to-aws-cloudfront:
     docker:
-      - image: cimg/node:latest
+      - image: cimg/node:16.15.0
     working_directory: ~/cinema-circleci
     steps:
       - checkout

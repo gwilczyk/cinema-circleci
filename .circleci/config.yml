@@ -1,57 +1,70 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@4.7
-
-jobs:
-  build:
-    docker:
-      - image: cimg/node:16.15.0
-    working_directory: ~/dockerDirectory
-    steps:
-      - checkout
-      - run:
-          name: Show current branch
-          command: echo ${CIRCLE_BRANCH}
-      - restore_cache:
-          keys:
-            - app-{{ checksum "package.json"}}
-            - app-
-      - run:
-          name: Install yarn
-          command: npm install -g yarn
-      - run:
-          name: Install dependencies
-          command: yarn install
-      - save_cache:
-          paths:
-            - node_modules
-          key: app-{{ checksum "package.json"}}
-
-  deploy-to-aws-s3:
+executors:
+  app-executor:
     docker:
       - image: cimg/node:16.15.0
     working_directory: ~/cinema-circleci
+
+aliases:
+  - &show-current-branch-name
+    run:
+      name: Show current branch
+      command: echo ${CIRCLE_BRANCH}
+  - &restore-cache
+    restore_cache:
+      keys:
+        - app-{{ checksum "package.json"}}
+        - app-
+  - &install-yarn
+    run:
+      name: Install yarn
+      command: npm install -g yarn
+  - &install-dependencies
+    run:
+      name: Install dependencies
+      command: yarn install
+  - &save-cache
+    save-cache:
+      paths:
+        - node_modules
+      key: app-{{ checksum "package.json"}}
+  - &install-aws-cli
+    run:
+      name: Install AWS CLI
+      working_directory: /
+      command: |
+        sudo apt-get -y -qq update
+        sudo apt-get install -y awscli
+        sudo apt-get install -y python3-pip python3-dev build-essential
+  - &build-project
+    run:
+      name: Build project
+      command: |
+        yarn install
+        yarn run build
+        cd build
+        zip ../build.zip -r * .[^.]*
+        echo "Build successful!"
+        
+jobs:
+  build:
+    executor: app-executor
     steps:
       - checkout
-      - run:
-          name: Show current branch
-          command: echo ${CIRCLE_BRANCH}
-      - run:
-          name: Install AWS CLI
-          working_directory: /
-          command: |
-            sudo apt-get -y -qq update
-            sudo apt-get install -y awscli
-            sudo apt-get install -y python3-pip python3-dev build-essential
-      - run:
-          name: Build project
-          command: |
-            yarn install
-            yarn run build
-            cd build
-            zip ../build.zip -r * .[^.]*
-            echo "Build successful!"
+      - *show-current-branch-name
+      - *restore_cache
+      - *install-yarn         
+      - *install-dependencies
+      - *save_cache
+
+  deploy-to-aws-s3:
+    executor: app-executor
+    steps:
+      - checkout
+      - *show-current-branch-name
+      - *install-aws-cli
+      - *build-project
       - run:
           name: Deploy to AWS S3
           command: |
@@ -66,29 +79,12 @@ jobs:
             fi
 
   deploy-to-aws-cloudfront:
-    docker:
-      - image: cimg/node:16.15.0
-    working_directory: ~/cinema-circleci
+    executor: app-executor
     steps:
       - checkout
-      - run:
-          name: Show current branch
-          command: echo ${CIRCLE_BRANCH}
-      - run:
-          name: Install AWS CLI
-          working_directory: /
-          command: |
-            sudo apt-get -y -qq update
-            sudo apt-get install -y awscli
-            sudo apt-get install -y python3-pip python3-dev build-essential
-      - run:
-          name: Build project
-          command: |
-            yarn install
-            yarn run build
-            cd build
-            zip ../build.zip -r * .[^.]*
-            echo "Build successful!"
+      - *show-current-branch-name
+      - *install-aws-cli
+      - *build-project
       - run:
           name: Deploy to AWS Cloudfront
           command: |

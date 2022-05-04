@@ -194,8 +194,17 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      # - build
       - test
+      - notify-via-slack:
+         requires:
+           - deploy-to-aws-cloudfront
+         filters:
+           branches:
+             only:
+               - development
+               - staging
+               - main
+      # - build
       # - lint:
       #     requires:
       #       - build
@@ -233,12 +242,4 @@ workflows:
                 - development
                 - staging
                 - main
-      - notify-via-slack:
-          requires:
-            - deploy-to-aws-cloudfront
-          filters:
-            branches:
-              only:
-                - development
-                - staging
-                - main
+     

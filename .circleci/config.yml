@@ -65,8 +65,8 @@ jobs:
       - *show-current-branch-name
       - *restore-cache
       - run:
-        name: Run linting
-        command: yarn run lint
+          name: Run lint
+          command: yarn run lint
 
   deploy-to-aws-s3:
     executor: app-executor

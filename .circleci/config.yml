@@ -58,6 +58,16 @@ jobs:
       - *install-dependencies
       - *save_cache
 
+  lint:
+    executor: app-executor
+    steps:
+      - checkout
+      - *show-current-branch-name
+      - *restore_cache
+      - run:
+        name: Run linting
+        command: yarn run lint
+
   deploy-to-aws-s3:
     executor: app-executor
     steps:
@@ -103,9 +113,18 @@ workflows:
   build-and-deploy:
     jobs:
       - build
+      - lint:
+        requires:
+          - build
+        filters:
+          branches:
+            only:
+              - development
+              - staging
+              - main
       - deploy-to-aws-s3:
           requires:
-            - build
+            - lint
           filters:
             branches:
               only:

@@ -194,51 +194,50 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      - test
-      - notify-via-slack:
-          #  requires:
-          #    - deploy-to-aws-cloudfront
+      - build
+      - lint:
+          requires:
+            - build
           filters:
             branches:
               only:
                 - development
                 - staging
                 - main
-      # - build
-      # - lint:
-      #     requires:
-      #       - build
-      #     filters:
-      #       branches:
-      #         only:
-      #           - development
-      #           - staging
-      #           - main
-      # - prettier:
-      #     requires:
-      #       - build
-      #     filters:
-      #       branches:
-      #         only:
-      #           - development
-      #           - staging
-      #           - main
-      # - deploy-to-aws-s3:
-      #     requires:
-      #       - lint
-      #       - prettier
-      #     filters:
-      #       branches:
-      #         only:
-      #           - development
-      #           - staging
-      #           - main
-      # - deploy-to-aws-cloudfront:
-      # requires:
-      #   - deploy-to-aws-s3
-      # filters:
-      #   branches:
-      #     only:
-      #       - development
-      #       - staging
-      #       - main
+      - prettier:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - development
+                - staging
+                - main
+      - deploy-to-aws-s3:
+          requires:
+            - lint
+            - prettier
+          filters:
+            branches:
+              only:
+                - development
+                - staging
+                - main
+      - deploy-to-aws-cloudfront:
+          requires:
+            - deploy-to-aws-s3
+          filters:
+            branches:
+              only:
+                - development
+                - staging
+                - main
+      - notify-via-slack:
+          requires:
+            - deploy-to-aws-cloudfront
+          filters:
+            branches:
+              only:
+                - development
+                - staging
+                - main

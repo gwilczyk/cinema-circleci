@@ -53,7 +53,7 @@ jobs:
     steps:
       - checkout
       - *show-current-branch-name
-      - *restore_cache
+      - *restore-cache
       - *install-yarn         
       - *install-dependencies
       - *save_cache
@@ -63,7 +63,7 @@ jobs:
     steps:
       - checkout
       - *show-current-branch-name
-      - *restore_cache
+      - *restore-cache
       - run:
         name: Run linting
         command: yarn run lint

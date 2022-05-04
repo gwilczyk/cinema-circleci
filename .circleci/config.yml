@@ -68,6 +68,16 @@ jobs:
           name: Run lint
           command: yarn run lint
 
+  prettier:
+    executor: app-executor
+    steps:
+      - checkout
+      - *show-current-branch-name
+      - *restore-cache
+      - run:
+          name: Run prettier check
+          command: yarn run prettier:check
+
   deploy-to-aws-s3:
     executor: app-executor
     steps:
@@ -122,9 +132,18 @@ workflows:
                 - development
                 - staging
                 - main
+      - prettier:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - development
+                - staging
+                - main
       - deploy-to-aws-s3:
           requires:
-            - lint
+            - prettier
           filters:
             branches:
               only:

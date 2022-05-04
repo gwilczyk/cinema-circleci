@@ -196,14 +196,14 @@ workflows:
     jobs:
       - test
       - notify-via-slack:
-        #  requires:
-        #    - deploy-to-aws-cloudfront
-         filters:
-           branches:
-             only:
-               - development
-               - staging
-               - main
+          #  requires:
+          #    - deploy-to-aws-cloudfront
+          filters:
+            branches:
+              only:
+                - development
+                - staging
+                - main
       # - build
       # - lint:
       #     requires:
@@ -234,12 +234,11 @@ workflows:
       #           - staging
       #           - main
       # - deploy-to-aws-cloudfront:
-          requires:
-            - deploy-to-aws-s3
-          filters:
-            branches:
-              only:
-                - development
-                - staging
-                - main
-     
+      # requires:
+      #   - deploy-to-aws-s3
+      # filters:
+      #   branches:
+      #     only:
+      #       - development
+      #       - staging
+      #       - main

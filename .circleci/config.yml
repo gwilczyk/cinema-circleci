@@ -196,8 +196,8 @@ workflows:
     jobs:
       - test
       - notify-via-slack:
-         requires:
-           - deploy-to-aws-cloudfront
+        #  requires:
+        #    - deploy-to-aws-cloudfront
          filters:
            branches:
              only:

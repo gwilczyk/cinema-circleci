@@ -25,7 +25,7 @@ aliases:
       name: Install dependencies
       command: yarn install
   - &save-cache
-    save-cache:
+    save_cache:
       paths:
         - node_modules
       key: app-{{ checksum "package.json"}}
@@ -46,7 +46,7 @@ aliases:
         cd build
         zip ../build.zip -r * .[^.]*
         echo "Build successful!"
-        
+
 jobs:
   build:
     executor: app-executor
@@ -54,9 +54,9 @@ jobs:
       - checkout
       - *show-current-branch-name
       - *restore-cache
-      - *install-yarn         
+      - *install-yarn
       - *install-dependencies
-      - *save_cache
+      - *save-cache
 
   lint:
     executor: app-executor

@@ -10,7 +10,7 @@ executors:
     working_directory: ~/cinema-circleci
   slack-executor:
     docker:
-      - image: cimg/base:latest
+      - image: cimg/base:stable
     resource_class: small
   terraform-executor:
     docker:

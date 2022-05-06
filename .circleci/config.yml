@@ -6,7 +6,7 @@ version: 2.1
 executors:
   app-executor:
     docker:
-      - image: cimg/node:latest
+      - image: cimg/node:16.15.0
     working_directory: ~/cinema-circleci
   slack-executor:
     docker:

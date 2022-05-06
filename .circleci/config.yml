@@ -6,12 +6,15 @@ version: 2.1
 executors:
   app-executor:
     docker:
-      - image: cimg/node:16.15.0
+      - image: cimg/node:latest
     working_directory: ~/cinema-circleci
   slack-executor:
     docker:
-      - image: 'cimg/base:stable'
+      - image: cimg/base:latest
     resource_class: small
+  terraform-executor:
+    docker:
+      - image: hashicorp/terraform:latest
 
 aliases:
   - &show-current-branch-name
@@ -85,51 +88,78 @@ jobs:
           name: Run prettier check
           command: yarn run prettier:check
 
+  terraform-validate:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - *show-current-branch-name
+      - run:
+          name: Terraform Validate & Format
+          command: |
+            cd infrastructure/
+            terraform init -backend=false
+            terraform validate
+            terraform fmt -check
+
+  terraform-plan-and-apply:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./
+      - *show-current-branch-name
+      - run:
+          name: Terraform Plan
+          command: |
+            cd artifacts/infrastructure/
+            terraform init
+            terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
+            terraform plan
+      - run:
+          name: Terraform Apply
+          command: |
+            cd artifacts/infrastructure/
+            terraform workspace select ${CIRCLE_BRANCH}
+            terraform apply --auto-approve
+            terraform output cinema_circleci_bucket_name > ../cinema_circleci_bucket_name.txt
+            terraform output cloudfront_distribution_id > ../cloudfront_distribution_id.txt
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - artifacts
+
   deploy-to-aws-s3:
     executor: app-executor
     steps:
       - checkout
+      - attach_workspace:
+          at: ./
       - *show-current-branch-name
       - *install-aws-cli
       - *build-project
       - run:
           name: Deploy to AWS S3
           command: |
-            if [ "${CIRCLE_BRANCH}" == "main" ]
-            then
-              aws --region ${AWS_REGION} s3 sync ~/cinema-circleci/build s3://${AWS_BUCKET_PRODUCTION} --delete
-            elif [ "${CIRCLE_BRANCH}" == "staging" ]
-            then
-              aws --region ${AWS_REGION} s3 sync ~/cinema-circleci/build s3://${AWS_BUCKET_STAGING} --delete
-            else
-              aws --region ${AWS_REGION} s3 sync ~/cinema-circleci/build s3://${AWS_BUCKET_DEV} --delete
-            fi
+            AWS_BUCKET_NAME=$(cat artifacts/cinema_circleci_bucket_name.txt | sed 's/\"//g')
+            echo AWS_BUCKET_NAME
+            aws --region ${AWS_REGION} s3 sync ~/cinema-circleci/build s3://${AWS_BUCKET_NAME} --delete
 
   deploy-to-aws-cloudfront:
     executor: app-executor
     steps:
       - checkout
+      - attach_workspace:
+          at: ./
       - *show-current-branch-name
       - *install-aws-cli
       - *build-project
       - run:
           name: Deploy to AWS Cloudfront
           command: |
+            CLOUDFRONT_DISTRIBUTION_ID=$(cat artifacts/cloudfront_distribution_id.txt | sed 's/\"//g')
+            echo CLOUDFRONT_DISTRIBUTION_ID
             aws configure set preview.cloudfront true
-            if [ "${CIRCLE_BRANCH}" == "main" ]
-            then
-              aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID_PRODUCTION} --paths /\*
-            elif [ "${CIRCLE_BRANCH}" == "staging" ]
-            then
-              aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID_STAGING} --paths /\*
-            else
-              aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID_DEV} --paths /\*
-            fi
-
-  test:
-    executor: app-executor
-    steps:
-      - run: echo "Test my app"
+            aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_DISTRIBUTION_ID} --paths /\*
 
   notify-via-slack:
     executor: slack-executor
@@ -191,6 +221,19 @@ jobs:
               ]
             }
 
+  terraform-destroy:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - *show-current-branch-name
+      - run:
+          name: Terraform Destroy
+          command: |
+            cd artifacts/infrastructure/
+            terraform init
+            terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
+            terraform destroy --auto-approve
+
 workflows:
   build-and-deploy:
     jobs:
@@ -213,10 +256,28 @@ workflows:
                 - development
                 - staging
                 - main
-      - deploy-to-aws-s3:
+      - terraform-validate:
           requires:
             - lint
             - prettier
+          filters:
+            branches:
+              only:
+                - development
+                - staging
+                - main
+      - terraform-plan-and-apply:
+          requires:
+            - terraform-validate
+          filters:
+            branches:
+              only:
+                - development
+                - staging
+                - main
+      - deploy-to-aws-s3:
+          requires:
+            - terraform-plan-and-apply
           filters:
             branches:
               only:
@@ -235,6 +296,19 @@ workflows:
       - notify-via-slack:
           requires:
             - deploy-to-aws-cloudfront
+          filters:
+            branches:
+              only:
+                - development
+                - staging
+                - main
+      - hold:
+          type: approval
+          requires:
+            - deploy-to-aws-cloudfront
+      - terraform-destroy:
+          requires:
+            - hold
           filters:
             branches:
               only:

@@ -29,7 +29,9 @@ aliases:
   - &install-yarn
     run:
       name: Install yarn
-      command: npm install -g yarn
+      command: |
+        mkdir artifacts
+        npm install -g yarn
   - &install-dependencies
     run:
       name: Install dependencies
@@ -148,7 +150,7 @@ jobs:
           name: Deploy to AWS S3
           command: |
             AWS_BUCKET_NAME=$(cat artifacts/cinema_circleci_bucket_name.txt | sed 's/\"//g')
-            echo AWS_BUCKET_NAME
+            echo $AWS_BUCKET_NAME
             aws --region ${AWS_REGION} s3 sync ~/cinema-circleci/build s3://${AWS_BUCKET_NAME} --delete
 
   deploy-to-aws-cloudfront:
@@ -164,7 +166,7 @@ jobs:
           name: Deploy to AWS Cloudfront
           command: |
             CLOUDFRONT_DISTRIBUTION_ID=$(cat artifacts/cloudfront_distribution_id.txt | sed 's/\"//g')
-            echo CLOUDFRONT_DISTRIBUTION_ID
+            echo $CLOUDFRONT_DISTRIBUTION_ID
             aws configure set preview.cloudfront true
             aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_DISTRIBUTION_ID} --paths /\*
 
@@ -236,7 +238,7 @@ jobs:
       - run:
           name: Terraform Destroy
           command: |
-            cd artifacts/infrastructure/
+            cd infrastructure/
             terraform init
             terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
             terraform destroy --auto-approve

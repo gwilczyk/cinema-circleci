@@ -1,23 +1,32 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true,
-        "node": true
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": ["plugin:react/recommended", "standard"],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended"
-    ],
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": "latest",
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react"
-    ],
-    "rules": {
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "settings": {
+    "react": {
+      "version": "16.0"
     }
+  },
+  "plugins": ["react"],
+  "rules": {
+    "camelcase": 0,
+    "indent": "off",
+    "no-return-assign": 0,
+    "no-tabs": 0,
+    "semi": 0,
+    "space-before-function-paren": [0, { "anonymous": "always", "named": "always" }]
+  }
 }

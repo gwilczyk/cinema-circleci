@@ -4,25 +4,25 @@ import RenderArrows from './RenderArrows'
 import './SlideShow.scss'
 
 const SlideShow = ({ images }) => {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [image, setImage] = useState(`${images[currentIndex]}`)
+  const [slideIndex, setSlideIndex] = useState(0)
+  const [image, setImage] = useState(`${images[0]}`)
 
   const moveSlideIndex = (type) => {
     const lastIndex = images.length - 1
 
     if (type === 'prev') {
       /* Going to previous slide */
-      currentIndex <= 0 ? setCurrentIndex(lastIndex) : setCurrentIndex((prev) => prev - 1)
+      slideIndex <= 0 ? setSlideIndex(lastIndex) : setSlideIndex((prev) => prev - 1)
     } else {
       /* Going to next slide */
-      currentIndex >= lastIndex ? setCurrentIndex(0) : setCurrentIndex((prev) => prev + 1)
+      slideIndex >= lastIndex ? setSlideIndex(0) : setSlideIndex((prev) => prev + 1)
     }
   }
 
-  const Indicators = ({ currentIndex }) => {
+  const Indicators = ({ slideIndex }) => {
     const indicatorsList = images.map((slide, index) => {
       const btnClass =
-        index === currentIndex ? 'slider-navButton slider-navButton--active' : 'slider-navButton'
+        index === slideIndex ? 'slider-navButton slider-navButton--active' : 'slider-navButton'
 
       return <button className={btnClass} key={index} />
     })
@@ -30,14 +30,17 @@ const SlideShow = ({ images }) => {
     return <div className="slider-nav">{indicatorsList}</div>
   }
 
-  /* Update image when currentIndex changes. */
-  useEffect(() => setImage(images[currentIndex]), [currentIndex])
+  /* Set initial image */
+  useEffect(() => setImage(images[0]), [images])
+
+  /* Update image when slideIndex changes. */
+  useEffect(() => setImage(images[slideIndex]), [slideIndex])
 
   /* Change image automatically every 5 seconds */
   useEffect(() => {
-    const timeInterval = setInterval(() => moveSlideIndex('next'), [5000])
+    const timeInterval = setTimeout(() => moveSlideIndex('next'), [5000])
 
-    return () => clearInterval(timeInterval)
+    return () => clearTimeout(timeInterval)
   }, [image])
 
   return (
@@ -56,7 +59,7 @@ const SlideShow = ({ images }) => {
         </div>
 
         <RenderArrows action={moveSlideIndex} />
-        <Indicators currentIndex={currentIndex} />
+        <Indicators slideIndex={slideIndex} />
       </div>
     </>
   )
@@ -64,7 +67,7 @@ const SlideShow = ({ images }) => {
 
 SlideShow.propTypes = {
   images: PropTypes.array.isRequired,
-  currentIndex: PropTypes.number
+  slideIndex: PropTypes.number
 }
 
 export default SlideShow

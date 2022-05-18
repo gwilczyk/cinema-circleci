@@ -1,84 +1,78 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchInitialMovies, fetchNextMovies } from 'redux/actions/movieActions'
+
 import Grid from 'components/Content/Grid'
 import Paginate from 'components/Content/Paginate'
 import SlideShow from 'components/Content/SlideShow'
-import './MainContent.scss'
 
-const IMAGES = [
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw4Xaf0afxbWT0zXRo6apRDS4y8jJPcM0dWg&usqp=CAU',
-    rating: 6.5
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKzJMau2AO-RA_vXHvvXCSnlWetdSdyLJfcw&usqp=CAU',
-    rating: 8.8
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0NW8tncnF8OA5k5qUyHbGRkGF4xNr1ZoUbQ&usqp=CAU',
-    rating: 4
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKzJMau2AO-RA_vXHvvXCSnlWetdSdyLJfcw&usqp=CAU',
-    rating: 3.8
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw4Xaf0afxbWT0zXRo6apRDS4y8jJPcM0dWg&usqp=CAU',
-    rating: 9.5
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw4Xaf0afxbWT0zXRo6apRDS4y8jJPcM0dWg&usqp=CAU',
-    rating: 6.5
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKzJMau2AO-RA_vXHvvXCSnlWetdSdyLJfcw&usqp=CAU',
-    rating: 8.8
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0NW8tncnF8OA5k5qUyHbGRkGF4xNr1ZoUbQ&usqp=CAU',
-    rating: 7
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0NW8tncnF8OA5k5qUyHbGRkGF4xNr1ZoUbQ&usqp=CAU',
-    rating: 4
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw4Xaf0afxbWT0zXRo6apRDS4y8jJPcM0dWg&usqp=CAU',
-    rating: 9.5
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKzJMau2AO-RA_vXHvvXCSnlWetdSdyLJfcw&usqp=CAU',
-    rating: 3.8
-  },
-  {
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0NW8tncnF8OA5k5qUyHbGRkGF4xNr1ZoUbQ&usqp=CAU',
-    rating: 7
+import './MainContent.scss'
+import { MOVIE_LOAD_PREV } from 'redux/actions/movieTypes'
+
+const fisherYatesShuffle = (arr) => {
+  const localArray = [...arr]
+  for (let i = localArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * i)
+    const localArray_i = localArray[i]
+    localArray[i] = localArray[j]
+    localArray[j] = localArray_i
   }
-]
+  return localArray
+}
 
 const MainContent = () => {
-  const [page, setPage] = useState(1)
-  const pages = 10
+  const dispatch = useDispatch()
+  const { movies, movieType, page, pages } = useSelector((state) => state.movieList)
+  const [images, setImages] = useState([])
 
-  const paginate = (type) => {
-    if (type === 'prev') {
-      page > 1 ? setPage((prev) => prev - 1) : setPage(1)
+  const paginate = (direction) => {
+    if (direction === 'prev') {
+      page > 1
+        ? dispatch({ type: MOVIE_LOAD_PREV, payload: { page: page - 1 } })
+        : dispatch(fetchInitialMovies(movieType))
     } else {
-      page < pages ? setPage((prev) => prev + 1) : setPage(pages)
+      page < pages
+        ? dispatch(fetchNextMovies(movieType, page + 1))
+        : dispatch(fetchNextMovies(movieType, pages))
     }
   }
 
+  /* Shuffle movies and selects the 5 first of them */
+  useEffect(() => {
+    const firstMovies = movies && movies.length && fisherYatesShuffle(movies).slice(0, 5)
+
+    if (firstMovies.length) {
+      const IMAGES = []
+      for (let i = 0; i < 5; i++) {
+        IMAGES.push({
+          rating: firstMovies[i].vote_average,
+          title: firstMovies[i].original_title,
+          url: `https://image.tmdb.org/t/p/original/${firstMovies[i].backdrop_path}`
+        })
+      }
+
+      setImages(IMAGES)
+    }
+  }, [movies])
+
   return (
     <div className="main-content">
-      <SlideShow images={IMAGES} />
+      <SlideShow images={images} />
 
       <div className="grid-movie-title">
-        <div className="movie-type">Now Playing</div>
+        <div className="movie-type">
+          {movieType
+            .split('_')
+            .map((elt) => elt[0].toUpperCase() + elt.slice(1).toLowerCase())
+            .join(' ')}
+        </div>
         <div className="paginate">
-          <Paginate page={page} paginate={paginate} pages={10} />
+          <Paginate page={page} paginate={paginate} pages={pages} />
         </div>
       </div>
 
-      <Grid images={IMAGES} />
+      <Grid />
     </div>
   )
 }

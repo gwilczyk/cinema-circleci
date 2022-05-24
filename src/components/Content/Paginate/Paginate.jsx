@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import './Paginate.scss'
+import 'components/Content/Paginate/Paginate.scss'
 
 const Paginate = ({ page, pages, paginate }) => {
   const prevButtonClass = page > 1 ? 'paginate-button' : 'paginate-button disable'

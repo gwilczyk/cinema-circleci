@@ -6,14 +6,19 @@ import LazyImage from 'components/LazyImage/LazyImage'
 import Rating from 'components/Content/Rating'
 
 import 'components/Content/Grid/Grid.scss'
+import 'components/Content/Search/Search.scss'
 
-const Grid = () => {
-  const { movies } = useSelector((state) => state.movieList)
+const Search = () => {
+  const { query, results } = useSelector((state) => state.search)
 
   return (
-    <>
+    <div className="search-keyword">
+      <div className="grid-search-title">
+        <span className="grid-text1">Your search keyword:</span>{' '}
+        <span className="grid-text2">{query}</span>
+      </div>
       <div className="grid">
-        {movies.map((movie) => (
+        {results.map((movie) => (
           <Fragment key={uuidv4()}>
             {movie.poster_path && (
               <LazyImage
@@ -41,8 +46,8 @@ const Grid = () => {
           </Fragment>
         ))}
       </div>
-    </>
+    </div>
   )
 }
 
-export default Grid
+export default Search

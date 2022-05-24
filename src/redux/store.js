@@ -3,9 +3,11 @@ import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 import movieReducer from 'redux/reducers/movieReducers'
+import searchReducer from 'redux/reducers/searchReducers'
 
 const reducer = combineReducers({
-  movieList: movieReducer
+  movieList: movieReducer,
+  search: searchReducer
 })
 
 const initialState = {}

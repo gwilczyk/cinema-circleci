@@ -6,10 +6,12 @@ import { fetchInitialMovies, fetchMoreMoviesByScroll } from 'redux/actions/movie
 import MainContent from 'components/Content/MainContent'
 import Spinner from 'components/Content/Spinner'
 
-import './Main.scss'
+import 'components/Main/Main.scss'
+import Search from 'components/Content/Search'
 
 const Main = () => {
   const { loading, movieType, page, pages } = useSelector((state) => state.movieList)
+  const { results } = useSelector((state) => state.search)
   const dispatch = useDispatch()
 
   const [initialLoading, setInitialLoading] = useState(false)
@@ -30,7 +32,7 @@ const Main = () => {
     }
   }
 
-  /* Setting initial delay */
+  /* Setting up initial delay */
   useEffect(() => {
     setInitialLoading(true)
     const timer = setTimeout(() => setInitialLoading(false), 1500)
@@ -38,7 +40,7 @@ const Main = () => {
     return () => clearTimeout(timer)
   }, [])
 
-  /* Fetching initial movies at each category ('now_playing', 'popular', etc.) changing. */
+  /* Fetching initial movies at each category (ie 'now_playing', 'popular', etc.) change. */
   useEffect(() => {
     if (!loading && !initialLoading) {
       dispatch(fetchInitialMovies(movieType))
@@ -47,7 +49,7 @@ const Main = () => {
 
   return (
     <div className="main" onScroll={handleScroll} ref={mainRef}>
-      {initialLoading ? <Spinner /> : <MainContent />}
+      {initialLoading ? <Spinner /> : results?.length > 0 ? <Search /> : <MainContent />}
       <div ref={bottomLineRef} />
     </div>
   )

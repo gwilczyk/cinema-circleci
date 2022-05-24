@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { number, string } from 'prop-types'
-import './Rating.scss'
+import 'components/Content/Rating/Rating.scss'
 
 const Rating = ({ rating, stars, className = '' }) => {
   const [starsNumber, setStarsNumber] = useState([])

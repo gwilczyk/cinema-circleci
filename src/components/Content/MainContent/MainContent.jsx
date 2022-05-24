@@ -7,7 +7,7 @@ import Grid from 'components/Content/Grid'
 import Paginate from 'components/Content/Paginate'
 import SlideShow from 'components/Content/SlideShow'
 
-import './MainContent.scss'
+import 'components/Content/MainContent/MainContent.scss'
 import { MOVIE_LOAD_PREV } from 'redux/actions/movieTypes'
 
 const fisherYatesShuffle = (arr) => {

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setMovieType } from 'redux/actions/movieActions'
 
-import './Header.scss'
+import 'components/Header/Header.scss'
 import logo from 'assets/cinema-logo.svg'
+import { searchMovies } from 'redux/actions/searchActions'
 
 const HEADER_LIST = [
   {
@@ -32,6 +33,8 @@ const Header = () => {
   const dispatch = useDispatch()
   const { movieType } = useSelector((state) => state.movieList)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [term, setTerm] = useState('')
+  const [debouncedTerm, setDebouncedTerm] = useState(term)
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
@@ -39,6 +42,21 @@ const Header = () => {
     isMenuOpen && toggleMenu()
     dispatch(setMovieType(type))
   }
+
+  const handleSearch = (event) => setTerm((prev) => event.target.value)
+
+  /* Debouncing Search Triggering */
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedTerm(term)
+    }, 1000)
+
+    return () => clearTimeout(timerId)
+  }, [term])
+
+  useEffect(() => {
+    dispatch(searchMovies(debouncedTerm))
+  }, [debouncedTerm])
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -87,7 +105,13 @@ const Header = () => {
               </li>
             ))}
 
-            <input className="search-input" placeholder="Search for a movie" type="text" />
+            <input
+              className="search-input"
+              onChange={handleSearch}
+              placeholder="Search for a movie"
+              type="text"
+              value={term}
+            />
           </ul>
         </div>
       </div>

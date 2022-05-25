@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+
 import { useSelector, useDispatch } from 'react-redux'
 import { setMovieType } from 'redux/actions/movieActions'
 
@@ -43,7 +45,7 @@ const Header = () => {
     dispatch(setMovieType(type))
   }
 
-  const handleSearch = (event) => setTerm((prev) => event.target.value)
+  const handleChange = (event) => setTerm((prev) => event.target.value)
 
   /* Debouncing Search Triggering */
   useEffect(() => {
@@ -71,9 +73,11 @@ const Header = () => {
       <div className="header-nav-wrapper">
         <div className="header-bar"></div>
         <div className="header-navbar">
-          <div className="header-image">
-            <img src={logo} alt="" />
-          </div>
+          <Link to="/">
+            <div className="header-image">
+              <img src={logo} alt="" />
+            </div>
+          </Link>
 
           <div
             className={`${isMenuOpen ? 'header-menu-toggle is-active' : 'header-menu-toggle'}`}
@@ -107,7 +111,7 @@ const Header = () => {
 
             <input
               className="search-input"
-              onChange={handleSearch}
+              onChange={handleChange}
               placeholder="Search for a movie"
               type="text"
               value={term}

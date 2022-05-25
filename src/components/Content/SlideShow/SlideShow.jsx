@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+
 import RenderArrows from './RenderArrows'
+
 import './SlideShow.scss'
 
 const SlideShow = ({ images }) => {

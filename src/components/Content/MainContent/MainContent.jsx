@@ -2,24 +2,15 @@ import React, { useEffect, useState } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchInitialMovies, fetchNextMovies } from 'redux/actions/movieActions'
+import { MOVIE_LOAD_PREV } from 'redux/actions/movieTypes'
 
 import Grid from 'components/Content/Grid'
 import Paginate from 'components/Content/Paginate'
 import SlideShow from 'components/Content/SlideShow'
 
-import 'components/Content/MainContent/MainContent.scss'
-import { MOVIE_LOAD_PREV } from 'redux/actions/movieTypes'
+import { fisherYatesShuffle } from 'utils'
 
-const fisherYatesShuffle = (arr) => {
-  const localArray = [...arr]
-  for (let i = localArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * i)
-    const localArray_i = localArray[i]
-    localArray[i] = localArray[j]
-    localArray[j] = localArray_i
-  }
-  return localArray
-}
+import 'components/Content/MainContent/MainContent.scss'
 
 const MainContent = () => {
   const dispatch = useDispatch()
@@ -67,6 +58,7 @@ const MainContent = () => {
             .map((elt) => elt[0].toUpperCase() + elt.slice(1).toLowerCase())
             .join(' ')}
         </div>
+
         <div className="paginate">
           <Paginate page={page} paginate={paginate} pages={pages} />
         </div>

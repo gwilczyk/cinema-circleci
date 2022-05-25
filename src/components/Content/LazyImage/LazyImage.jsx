@@ -42,16 +42,14 @@ const LazyImage = ({ alt, children, className, src }) => {
   }, [imageRef, imageSrc, src])
 
   return (
-    <>
-      <div
-        alt={alt}
-        className={className}
-        ref={setImageRef}
-        style={{ backgroundImage: `url(${imageSrc})` }}
-      >
-        {children}
-      </div>
-    </>
+    <div
+      alt={alt}
+      className={className}
+      ref={setImageRef}
+      style={{ backgroundImage: `url(${imageSrc})` }}
+    >
+      {children}
+    </div>
   )
 }
 

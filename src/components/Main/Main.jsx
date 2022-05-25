@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Outlet } from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchInitialMovies, fetchMoreMoviesByScroll } from 'redux/actions/movieActions'
@@ -51,6 +52,7 @@ const Main = () => {
     <div className="main" onScroll={handleScroll} ref={mainRef}>
       {initialLoading ? <Spinner /> : results?.length > 0 ? <Search /> : <MainContent />}
       <div ref={bottomLineRef} />
+      <Outlet />
     </div>
   )
 }

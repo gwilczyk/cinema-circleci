@@ -1,9 +1,12 @@
 import React, { Fragment } from 'react'
+import { Link } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 import { useSelector } from 'react-redux'
 
-import LazyImage from 'components/LazyImage/LazyImage'
+import LazyImage from 'components/Content/LazyImage/LazyImage'
 import Rating from 'components/Content/Rating'
+
+import { formatMovieTitle } from 'utils'
 
 import 'components/Content/Grid/Grid.scss'
 import 'components/Content/Search/Search.scss'
@@ -28,7 +31,9 @@ const Search = () => {
               >
                 <div className="grid-read-more">
                   <button className="grid-cell-button">
-                    <a href="#">Read More</a>
+                    <Link to={`/${movie.id}/${formatMovieTitle(movie.title)}/details`}>
+                      Read More
+                    </Link>
                   </button>
                 </div>
 

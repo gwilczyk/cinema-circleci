@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 import { useSelector } from 'react-redux'
 
-import LazyImage from 'components/Content/LazyImage/LazyImage'
+import LazyImage from 'components/Content/LazyImage'
 import Rating from 'components/Content/Rating'
 
 import { formatMovieTitle } from 'utils'

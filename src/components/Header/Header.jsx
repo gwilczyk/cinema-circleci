@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { setMovieType } from 'redux/actions/movieActions'
-
-import 'components/Header/Header.scss'
-import logo from 'assets/cinema-logo.svg'
 import { searchMovies } from 'redux/actions/searchActions'
+
+import { formatHeaderItems } from 'utils'
+
+import logo from 'assets/cinema-logo.svg'
+import 'components/Header/Header.scss'
 
 const HEADER_LIST = [
   {
@@ -34,20 +36,27 @@ const HEADER_LIST = [
 const Header = () => {
   const dispatch = useDispatch()
   const { movieType } = useSelector((state) => state.movieList)
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [term, setTerm] = useState('')
   const [debouncedTerm, setDebouncedTerm] = useState(term)
+  const [disableSearchInput, setDisableSearchInput] = useState(false)
+
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
   const handleClick = (type) => {
     isMenuOpen && toggleMenu()
     dispatch(setMovieType(type))
+    /* navigate is used to leave Details.jsx back to Main.jsx */
+    navigate('/')
   }
 
   const handleChange = (event) => setTerm((prev) => event.target.value)
 
-  /* Debouncing Search Triggering */
+  /* Debounce Search Triggering */
   useEffect(() => {
     const timerId = setTimeout(() => {
       setDebouncedTerm(term)
@@ -60,6 +69,7 @@ const Header = () => {
     dispatch(searchMovies(debouncedTerm))
   }, [debouncedTerm])
 
+  /* Handle menu opening */
   useEffect(() => {
     if (isMenuOpen) {
       document.body.classList.add('header-nav-open')
@@ -67,6 +77,9 @@ const Header = () => {
       document.body.classList.remove('header-nav-open')
     }
   }, [isMenuOpen])
+
+  /* Disable search input in Details pages */
+  useEffect(() => setDisableSearchInput((prev) => location.pathname !== '/'), [location.pathname])
 
   return (
     <>
@@ -100,17 +113,12 @@ const Header = () => {
                   <i className={iconClass} />
                 </span>
                 &nbsp;
-                <span className="header-list-name">
-                  {type
-                    .split('_')
-                    .map((elt) => elt[0].toUpperCase() + elt.slice(1).toLowerCase())
-                    .join(' ')}
-                </span>
+                <span className="header-list-name">{formatHeaderItems(type)}</span>
               </li>
             ))}
 
             <input
-              className="search-input"
+              className={`search-input ${disableSearchInput ? 'disabled' : ''}`}
               onChange={handleChange}
               placeholder="Search for a movie"
               type="text"

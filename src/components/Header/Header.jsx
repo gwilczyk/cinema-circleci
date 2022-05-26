@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { setMovieType } from 'redux/actions/movieActions'
@@ -41,9 +41,11 @@ const Header = () => {
   const [term, setTerm] = useState('')
   const [debouncedTerm, setDebouncedTerm] = useState(term)
   const [disableSearchInput, setDisableSearchInput] = useState(false)
+  const [showHeader, setShowHeader] = useState(true)
 
   const navigate = useNavigate()
   const location = useLocation()
+  const matchDetailsRoute = useMatch('/:id/:name/details')
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
@@ -81,52 +83,62 @@ const Header = () => {
   /* Disable search input in Details pages */
   useEffect(() => setDisableSearchInput((prev) => location.pathname !== '/'), [location.pathname])
 
+  /* Hide header in error screen
+   * (ie nor in MainScreen nor in DetailsScreen)
+   */
+  useEffect(
+    () => setShowHeader((prev) => matchDetailsRoute || location.pathname === '/'),
+    [location.pathname]
+  )
+
   return (
     <>
-      <div className="header-nav-wrapper">
-        <div className="header-bar"></div>
-        <div className="header-navbar">
-          <Link to="/">
-            <div className="header-image">
-              <img src={logo} alt="" />
+      {showHeader && (
+        <div className="header-nav-wrapper">
+          <div className="header-bar"></div>
+          <div className="header-navbar">
+            <Link to="/">
+              <div className="header-image">
+                <img src={logo} alt="" />
+              </div>
+            </Link>
+
+            <div
+              className={`${isMenuOpen ? 'header-menu-toggle is-active' : 'header-menu-toggle'}`}
+              id="header-mobile-menu"
+              onClick={toggleMenu}
+            >
+              <span className="bar"></span>
+              <span className="bar"></span>
+              <span className="bar"></span>
             </div>
-          </Link>
 
-          <div
-            className={`${isMenuOpen ? 'header-menu-toggle is-active' : 'header-menu-toggle'}`}
-            id="header-mobile-menu"
-            onClick={toggleMenu}
-          >
-            <span className="bar"></span>
-            <span className="bar"></span>
-            <span className="bar"></span>
+            <ul className={`${isMenuOpen ? 'header-nav header-mobile-nav' : 'header-nav'}`}>
+              {HEADER_LIST.map(({ id, iconClass, type }) => (
+                <li
+                  key={id}
+                  className={movieType === type ? 'header-nav-item active-item' : 'header-nav-item'}
+                  onClick={() => handleClick(type)}
+                >
+                  <span className="header-list-name">
+                    <i className={iconClass} />
+                  </span>
+                  &nbsp;
+                  <span className="header-list-name">{formatHeaderItems(type)}</span>
+                </li>
+              ))}
+
+              <input
+                className={`search-input ${disableSearchInput ? 'disabled' : ''}`}
+                onChange={handleChange}
+                placeholder="Search for a movie"
+                type="text"
+                value={term}
+              />
+            </ul>
           </div>
-
-          <ul className={`${isMenuOpen ? 'header-nav header-mobile-nav' : 'header-nav'}`}>
-            {HEADER_LIST.map(({ id, iconClass, type }) => (
-              <li
-                key={id}
-                className={movieType === type ? 'header-nav-item active-item' : 'header-nav-item'}
-                onClick={() => handleClick(type)}
-              >
-                <span className="header-list-name">
-                  <i className={iconClass} />
-                </span>
-                &nbsp;
-                <span className="header-list-name">{formatHeaderItems(type)}</span>
-              </li>
-            ))}
-
-            <input
-              className={`search-input ${disableSearchInput ? 'disabled' : ''}`}
-              onChange={handleChange}
-              placeholder="Search for a movie"
-              type="text"
-              value={term}
-            />
-          </ul>
         </div>
-      </div>
+      )}
     </>
   )
 }

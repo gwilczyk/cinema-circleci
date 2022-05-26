@@ -94,6 +94,7 @@ export const getDetailsOverview = (id) => async (dispatch) => {
       runtime,
       spoken_languages,
       status,
+      success: true,
       tagline,
       title,
       vote_average,

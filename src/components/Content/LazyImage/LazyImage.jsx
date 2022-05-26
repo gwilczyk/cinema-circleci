@@ -35,7 +35,7 @@ const LazyImage = ({ alt, children, className, src }) => {
 
     return () => {
       didCancel = true
-      if (observer && observer.unobserve) {
+      if (observer?.unobserve) {
         observer.unobserve(imageRef)
       }
     }
@@ -54,9 +54,9 @@ const LazyImage = ({ alt, children, className, src }) => {
 }
 
 LazyImage.propTypes = {
-  alt: PropTypes.string.isRequired,
+  alt: PropTypes.string,
   children: PropTypes.any,
-  className: PropTypes.string.isRequired,
+  className: PropTypes.any,
   src: PropTypes.string.isRequired
 }
 

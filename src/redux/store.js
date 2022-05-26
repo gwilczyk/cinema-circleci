@@ -2,10 +2,12 @@ import { combineReducers, legacy_createStore as createStore, applyMiddleware } f
 import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
+import detailsReducer from 'redux/reducers/detailsReducers'
 import movieReducer from 'redux/reducers/movieReducers'
 import searchReducer from 'redux/reducers/searchReducers'
 
 const reducer = combineReducers({
+  details: detailsReducer,
   movieList: movieReducer,
   search: searchReducer
 })

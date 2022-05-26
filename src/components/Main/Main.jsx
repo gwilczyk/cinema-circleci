@@ -1,17 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Outlet } from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchInitialMovies, fetchMoreMoviesByScroll } from 'redux/actions/movieActions'
+import { DETAILS_RESET } from 'redux/actions/detailsTypes'
 
 import MainContent from 'components/Content/MainContent'
+import Search from 'components/Content/Search'
 import Spinner from 'components/Content/Spinner'
 
 import 'components/Main/Main.scss'
-import Search from 'components/Content/Search'
 
 const Main = () => {
   const { loading, movieType, page, pages } = useSelector((state) => state.movieList)
+  const { success: detailsSuccess } = useSelector((state) => state.details)
   const { results } = useSelector((state) => state.search)
   const dispatch = useDispatch()
 
@@ -20,7 +21,7 @@ const Main = () => {
   const mainRef = useRef(null)
   const bottomLineRef = useRef(null)
 
-  /* Fetching new movies when scrolling */
+  /* Fetch new movies when scrolling */
   const handleScroll = () => {
     /*
       Adding navbar height (55px) + one grid row height (460px)
@@ -33,26 +34,34 @@ const Main = () => {
     }
   }
 
-  /* Setting up initial delay */
+  /* Setup initial delay */
   useEffect(() => {
     setInitialLoading(true)
-    const timer = setTimeout(() => setInitialLoading(false), 1500)
+    const timer = setTimeout(() => setInitialLoading(false), 500)
 
     return () => clearTimeout(timer)
   }, [])
 
-  /* Fetching initial movies at each category (ie 'now_playing', 'popular', etc.) change. */
+  /* Fetch initial movies at each category (ie 'now_playing', 'popular', etc.) change. */
   useEffect(() => {
     if (!loading && !initialLoading) {
       dispatch(fetchInitialMovies(movieType))
     }
   }, [movieType])
 
+  /* Reset details state when coming back to Main.jsx
+   * (namely from Details.jsx).
+   */
+  useEffect(() => {
+    if (detailsSuccess) {
+      dispatch({ type: DETAILS_RESET })
+    }
+  }, [detailsSuccess, dispatch])
+
   return (
     <div className="main" onScroll={handleScroll} ref={mainRef}>
-      {initialLoading ? <Spinner /> : results?.length > 0 ? <Search /> : <MainContent />}
+      {initialLoading ? <Spinner /> : results?.length ? <Search /> : <MainContent />}
       <div ref={bottomLineRef} />
-      <Outlet />
     </div>
   )
 }

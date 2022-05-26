@@ -8,7 +8,7 @@ import Grid from 'components/Content/Grid'
 import Paginate from 'components/Content/Paginate'
 import SlideShow from 'components/Content/SlideShow'
 
-import { fisherYatesShuffle } from 'utils'
+import { fisherYatesShuffle, formatHeaderItems } from 'utils'
 
 import 'components/Content/MainContent/MainContent.scss'
 
@@ -52,12 +52,7 @@ const MainContent = () => {
       <SlideShow images={images} />
 
       <div className="grid-movie-title">
-        <div className="movie-type">
-          {movieType
-            .split('_')
-            .map((elt) => elt[0].toUpperCase() + elt.slice(1).toLowerCase())
-            .join(' ')}
-        </div>
+        <div className="movie-type">{formatHeaderItems(movieType)}</div>
 
         <div className="paginate">
           <Paginate page={page} paginate={paginate} pages={pages} />

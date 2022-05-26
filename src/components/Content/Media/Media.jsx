@@ -1,8 +1,13 @@
 import React from 'react'
+import { v4 as uuidv4 } from 'uuid'
+
+import { useSelector } from 'react-redux'
 
 import 'components/Content/Media/Media.scss'
 
 const Media = () => {
+  const { posters, videos } = useSelector((state) => state.details)
+
   return (
     <>
       <div className="media">
@@ -10,31 +15,35 @@ const Media = () => {
           <div className="media-title">Watch Trailer</div>
 
           <div className="media-videos">
-            <div className="video">
-              <iframe
-                title="Avengers"
-                style={{
-                  width: '100%',
-                  height: '100%'
-                }}
-                src="https://www.youtube.com/embed/TcMBFSGVi1c"
-                frameBorder="0"
-                allowFullScreen
-              />
-            </div>
+            {videos.map(({ key, name }) => (
+              <div className="video" key={uuidv4()}>
+                <iframe
+                  title={name}
+                  style={{
+                    width: '100%',
+                    height: '100%'
+                  }}
+                  src={`https://www.youtube.com/embed/${key}`}
+                  frameBorder="1"
+                  allowFullScreen
+                />
+              </div>
+            ))}
           </div>
         </div>
 
         <div>
-          <div className="media-title">Photos (10)</div>
+          <div className="media-title">Photos ({posters.length})</div>
           <div className="media-images">
-            <div
-              className="image-cell"
-              style={{
-                backgroundImage:
-                  'url(https://images.pexels.com/photos/688574/pexels-photo-688574.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500)'
-              }}
-            />
+            {posters.map(({ file_path }) => (
+              <div
+                className="image-cell"
+                key={uuidv4()}
+                style={{
+                  backgroundImage: `url(https://image.tmdb.org/t/p/original${file_path})`
+                }}
+              />
+            ))}
           </div>
         </div>
       </div>

@@ -4,9 +4,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import store from 'redux/store'
 
-import Details from 'components/Content/Details'
+import DetailsScreen from 'screens/DetailsScreen'
+import ErrorScreen from 'screens/ErrorScreen'
+import MainScreen from 'screens/MainScreen'
+
 import Header from 'components/Header'
-import Main from 'components/Main'
 
 import './App.scss'
 
@@ -17,17 +19,11 @@ const App = () => (
 
       <div className="app">
         <Routes>
-          <Route exact path="/" element={<Main />} />
-          <Route path="/:id/:name/details" element={<Details />} />
+          <Route exact path="/" element={<MainScreen />} />
 
-          <Route
-            path="*"
-            element={
-              <main style={{ color: '#fff', padding: '1rem' }}>
-                <p>There&apos;s nothing here!</p>
-              </main>
-            }
-          />
+          <Route path="/:id/:name/details" element={<DetailsScreen />} />
+
+          <Route path="*" element={<ErrorScreen />} />
         </Routes>
       </div>
     </BrowserRouter>

@@ -73,7 +73,7 @@ const detailsReducer = (state = INITIAL_STATE, action) => {
     case DETAILS_OVERVIEW_SUCCESS:
       return {
         ...state,
-        loading: false,
+        // loading: false,
         backdrop_path: action.payload.backdrop_path,
         budget: action.payload.budget,
         genres: action.payload.genres,
@@ -85,7 +85,7 @@ const detailsReducer = (state = INITIAL_STATE, action) => {
         runtime: action.payload.runtime,
         spoken_languages: action.payload.spoken_languages,
         status: action.payload.status,
-        success: true,
+        success: action.payload.success,
         tagline: action.payload.tagline,
         title: action.payload.title,
         vote_average: action.payload.vote_average,
@@ -94,13 +94,14 @@ const detailsReducer = (state = INITIAL_STATE, action) => {
     case DETAILS_REVIEWS_SUCCESS:
       return {
         ...state,
+        loading: false,
         reviews: action.payload.reviews,
         reviews_page: action.payload.reviews_page,
         reviews_pages: action.payload.reviews_pages,
         reviews_total: action.payload.reviews_total
       }
     case DETAILS_VIDEOS_SUCCESS:
-      return { ...state, videos: action.payload.videos }
+      return { ...state, loading: false, videos: action.payload.videos }
     default:
       return state
   }

@@ -1,33 +1,49 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import PropTypes from 'prop-types'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import { Provider } from 'react-redux'
-import store from 'redux/store'
+import { useDispatch } from 'react-redux'
+import { initAppRoutes } from 'redux/actions/routesActions'
 
-import DetailsScreen from 'screens/DetailsScreen'
-import ErrorScreen from 'screens/ErrorScreen'
-import MainScreen from 'screens/MainScreen'
-
+import ErrorBoundary from 'components/ErrorBoundary'
 import Header from 'components/Header'
 
-import './App.scss'
+import DetailsScreen from 'screens/DetailsScreen'
+import MainScreen from 'screens/MainScreen'
 
-const App = () => (
-  <Provider store={store}>
+import 'App.scss'
+
+const ROUTES_ARRAY = [
+  { id: 0, path: '/', element: <MainScreen /> },
+  { id: 1, path: '/:id/:name/details', element: <DetailsScreen /> }
+]
+
+const App = (props) => {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(initAppRoutes(ROUTES_ARRAY))
+  }, [initAppRoutes, ROUTES_ARRAY])
+
+  return (
     <BrowserRouter>
-      <Header />
+      <ErrorBoundary>
+        <Header />
+      </ErrorBoundary>
 
       <div className="app">
         <Routes>
-          <Route exact path="/" element={<MainScreen />} />
-
-          <Route path="/:id/:name/details" element={<DetailsScreen />} />
-
-          <Route path="*" element={<ErrorScreen />} />
+          {ROUTES_ARRAY.map(({ id, path, element }) => (
+            <Route key={id} exact path={path} element={element} {...props} />
+          ))}
         </Routes>
       </div>
     </BrowserRouter>
-  </Provider>
-)
+  )
+}
+
+App.propTypes = {
+  props: PropTypes.any
+}
 
 export default App

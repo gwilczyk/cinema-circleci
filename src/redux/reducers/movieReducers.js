@@ -9,7 +9,7 @@ import {
   MOVIE_LOAD_NEXT_REQUEST,
   MOVIE_LOAD_NEXT_SUCCESS,
   MOVIE_LOAD_PREV,
-  MOVIE_TYPE
+  SET_MOVIE_TYPE
 } from 'redux/actions/movieTypes'
 
 const movieReducer = (
@@ -55,7 +55,7 @@ const movieReducer = (
         movies: state.movies.slice(20),
         page: action.payload.page
       }
-    case MOVIE_TYPE:
+    case SET_MOVIE_TYPE:
       return {
         ...state,
         movies: [],

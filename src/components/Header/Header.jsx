@@ -1,9 +1,13 @@
+/* eslint-disable multiline-ternary */
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom'
 
 import { useSelector, useDispatch } from 'react-redux'
+import { setError } from 'redux/actions/errorActions'
 import { setMovieType } from 'redux/actions/movieActions'
+import { setPathAndUrl } from 'redux/actions/routesActions'
 import { searchMovies } from 'redux/actions/searchActions'
+import { SET_PATH_AND_URL_FAILED } from 'redux/actions/routesTypes'
 
 import { formatHeaderItems } from 'utils'
 
@@ -35,7 +39,9 @@ const HEADER_LIST = [
 
 const Header = () => {
   const dispatch = useDispatch()
+  const { message: errorMessage, statusCode: errorStatus } = useSelector((state) => state.errors)
   const { movieType } = useSelector((state) => state.movieList)
+  const { path, routes_array, url } = useSelector((state) => state.routes)
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [term, setTerm] = useState('')
@@ -57,6 +63,32 @@ const Header = () => {
   }
 
   const handleChange = (event) => setTerm((prev) => event.target.value)
+
+  /* Handle navigation errors */
+  useEffect(() => {
+    if (routes_array.length) {
+      if (!path && !url) {
+        dispatch(setPathAndUrl({ path: '/', url: '/' }))
+
+        const payload = {
+          message: `Page with pathname ${location.pathname} not found!`,
+          statusCode: 404,
+          type: SET_PATH_AND_URL_FAILED
+        }
+
+        dispatch(setError(payload))
+
+        throw new Error(`Page with pathname ${location.pathname} not found with status code 404.`)
+      }
+    }
+  }, [dispatch, path, routes_array, setPathAndUrl, url])
+
+  /* Handle API errors */
+  useEffect(() => {
+    if (errorMessage && errorStatus) {
+      throw new Error(`${errorMessage.slice(0, -1)} with status code ${errorStatus}.`)
+    }
+  }, [errorMessage, errorStatus])
 
   /* Debounce Search Triggering */
   useEffect(() => {
@@ -88,12 +120,12 @@ const Header = () => {
    */
   useEffect(
     () => setShowHeader((prev) => matchDetailsRoute || location.pathname === '/'),
-    [location.pathname]
+    [location.pathname, matchDetailsRoute]
   )
 
   return (
     <>
-      {showHeader && (
+      {showHeader ? (
         <div className="header-nav-wrapper">
           <div className="header-bar"></div>
           <div className="header-navbar">
@@ -138,7 +170,7 @@ const Header = () => {
             </ul>
           </div>
         </div>
-      )}
+      ) : undefined}
     </>
   )
 }

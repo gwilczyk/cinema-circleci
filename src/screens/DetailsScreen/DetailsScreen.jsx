@@ -1,8 +1,9 @@
 /* eslint-disable multiline-ternary */
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useMatch, useParams } from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
+import { setPathAndUrl } from 'redux/actions/routesActions'
 import {
   getDetailsCredits,
   getDetailsImages,
@@ -23,6 +24,7 @@ import 'screens/DetailsScreen/DetailsScreen.scss'
 
 const DetailsScreen = () => {
   const { id } = useParams()
+  const matchDetailsRoute = useMatch('/:id/:name/details')
   const dispatch = useDispatch()
   const {
     backdrop_path,
@@ -37,6 +39,13 @@ const DetailsScreen = () => {
   } = useSelector((state) => state.details)
 
   const [initialLoading, setInitialLoading] = useState(true)
+
+  /* Setup path */
+  useEffect(() => {
+    const path = matchDetailsRoute.pattern.path
+    const url = matchDetailsRoute.pathname
+    dispatch(setPathAndUrl({ path, url }))
+  }, [matchDetailsRoute.pattern.path, matchDetailsRoute.pathname])
 
   /* Fetch details data from API */
   useEffect(() => {

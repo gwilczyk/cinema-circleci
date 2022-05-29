@@ -1,7 +1,10 @@
+/* eslint-disable multiline-ternary */
 import React, { useEffect, useRef, useState } from 'react'
+import { useMatch } from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchInitialMovies, fetchMoreMoviesByScroll } from 'redux/actions/movieActions'
+import { setPathAndUrl } from 'redux/actions/routesActions'
 import { DETAILS_RESET } from 'redux/actions/detailsTypes'
 
 import MainContent from 'components/MainContent'
@@ -10,16 +13,26 @@ import Spinner from 'components/Spinner'
 
 import 'screens/MainScreen/MainScreen.scss'
 
-const MainScreen = () => {
-  const { loading, movieType, page, pages } = useSelector((state) => state.movieList)
-  const { success: detailsSuccess } = useSelector((state) => state.details)
-  const { results } = useSelector((state) => state.search)
+const MainScreen = (props) => {
   const dispatch = useDispatch()
+  const { success: detailsSuccess } = useSelector((state) => state.details)
+  const { message: errorMessage } = useSelector((state) => state.errors)
+  const { loading, movieType, page, pages } = useSelector((state) => state.movieList)
+  const { results } = useSelector((state) => state.search)
 
-  const [initialLoading, setInitialLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(false)
 
   const mainRef = useRef(null)
   const bottomLineRef = useRef(null)
+
+  const matchMainRoute = useMatch('/')
+
+  /* Setup path and url states */
+  useEffect(() => {
+    const path = matchMainRoute.pattern.path
+    const url = matchMainRoute.pathname
+    dispatch(setPathAndUrl({ path, url }))
+  }, [matchMainRoute.pattern.path, matchMainRoute.pathname])
 
   /* Fetch new movies when scrolling */
   const handleScroll = () => {
@@ -44,10 +57,10 @@ const MainScreen = () => {
 
   /* Fetch initial movies at each category (ie 'now_playing', 'popular', etc.) change. */
   useEffect(() => {
-    if (!loading && !initialLoading) {
+    if (!loading && !initialLoading && !errorMessage) {
       dispatch(fetchInitialMovies(movieType))
     }
-  }, [movieType])
+  }, [errorMessage, movieType])
 
   /* Reset details state when coming back to Main.jsx
    * (namely from Details.jsx).
@@ -59,10 +72,14 @@ const MainScreen = () => {
   }, [detailsSuccess, dispatch])
 
   return (
-    <div className="main" onScroll={handleScroll} ref={mainRef}>
-      {initialLoading ? <Spinner /> : results?.length ? <Search /> : <MainContent />}
-      <div ref={bottomLineRef} />
-    </div>
+    <>
+      {!errorMessage && (
+        <div className="main" onScroll={handleScroll} ref={mainRef}>
+          {initialLoading ? <Spinner /> : results?.length ? <Search /> : <MainContent />}
+          <div ref={bottomLineRef} />
+        </div>
+      )}
+    </>
   )
 }
 

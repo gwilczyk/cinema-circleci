@@ -16,6 +16,7 @@ import {
   DETAILS_VIDEOS_SUCCESS
 } from 'redux/actions/detailsTypes'
 import axios from 'axios'
+import { setError } from 'redux/actions/errorActions'
 
 export const getDetailsCredits = (id) => async (dispatch) => {
   try {
@@ -29,11 +30,16 @@ export const getDetailsCredits = (id) => async (dispatch) => {
     const payload = { cast, crew }
     dispatch({ type: DETAILS_CREDITS_SUCCESS, payload })
   } catch (error) {
-    dispatch({
-      type: DETAILS_CREDITS_FAILED,
-      payload:
-        error.response && error.response.data.message ? error.response.data.message : error.message
-    })
+    const payload = {
+      message: error.response?.data?.status_message
+        ? error.response.data.status_message
+        : error.response?.data?.message
+        ? error.response.data.message
+        : error.message,
+      statusCode: error.response.status
+    }
+    dispatch({ type: DETAILS_CREDITS_FAILED, payload })
+    dispatch(setError({ ...payload, type: DETAILS_CREDITS_FAILED }))
   }
 }
 
@@ -49,11 +55,16 @@ export const getDetailsImages = (id) => async (dispatch) => {
     const payload = { backdrops, logos, posters }
     dispatch({ type: DETAILS_IMAGES_SUCCESS, payload })
   } catch (error) {
-    dispatch({
-      type: DETAILS_IMAGES_FAILED,
-      payload:
-        error.response && error.response.data.message ? error.response.data.message : error.message
-    })
+    const payload = {
+      message: error.response?.data?.status_message
+        ? error.response.data.status_message
+        : error.response?.data?.message
+        ? error.response.data.message
+        : error.message,
+      statusCode: error.response.status
+    }
+    dispatch({ type: DETAILS_IMAGES_FAILED, payload })
+    dispatch(setError({ ...payload, type: DETAILS_IMAGES_FAILED }))
   }
 }
 
@@ -102,11 +113,16 @@ export const getDetailsOverview = (id) => async (dispatch) => {
     }
     dispatch({ type: DETAILS_OVERVIEW_SUCCESS, payload })
   } catch (error) {
-    dispatch({
-      type: DETAILS_OVERVIEW_FAILED,
-      payload:
-        error.response && error.response.data.message ? error.response.data.message : error.message
-    })
+    const payload = {
+      message: error.response?.data?.status_message
+        ? error.response.data.status_message
+        : error.response?.data?.message
+        ? error.response.data.message
+        : error.message,
+      statusCode: error.response.status
+    }
+    dispatch({ type: DETAILS_OVERVIEW_FAILED, payload })
+    dispatch(setError({ ...payload, type: DETAILS_OVERVIEW_FAILED }))
   }
 }
 
@@ -124,13 +140,16 @@ export const getDetailsReviews =
       const payload = { reviews, reviews_page: page, reviews_pages, reviews_total }
       dispatch({ type: DETAILS_REVIEWS_SUCCESS, payload })
     } catch (error) {
-      dispatch({
-        type: DETAILS_REVIEWS_FAILED,
-        payload:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message
-      })
+      const payload = {
+        message: error.response?.data?.status_message
+          ? error.response.data.status_message
+          : error.response?.data?.message
+          ? error.response.data.message
+          : error.message,
+        statusCode: error.response.status
+      }
+      dispatch({ type: DETAILS_REVIEWS_FAILED, payload })
+      dispatch(setError({ ...payload, type: DETAILS_REVIEWS_FAILED }))
     }
   }
 
@@ -146,10 +165,15 @@ export const getDetailsVideos = (id) => async (dispatch) => {
     const payload = { videos: results }
     dispatch({ type: DETAILS_VIDEOS_SUCCESS, payload })
   } catch (error) {
-    dispatch({
-      type: DETAILS_VIDEOS_FAILED,
-      payload:
-        error.response && error.response.data.message ? error.response.data.message : error.message
-    })
+    const payload = {
+      message: error.response?.data?.status_message
+        ? error.response.data.status_message
+        : error.response?.data?.message
+        ? error.response.data.message
+        : error.message,
+      statusCode: error.response.status
+    }
+    dispatch({ type: DETAILS_VIDEOS_FAILED, payload })
+    dispatch(setError({ ...payload, type: DETAILS_VIDEOS_FAILED }))
   }
 }

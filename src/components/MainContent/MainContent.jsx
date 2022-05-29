@@ -31,9 +31,9 @@ const MainContent = () => {
 
   /* Shuffle movies and selects the 5 first of them */
   useEffect(() => {
-    const firstMovies = movies && movies.length && fisherYatesShuffle(movies).slice(0, 5)
+    const firstMovies = movies?.length && fisherYatesShuffle(movies).slice(0, 5)
 
-    if (firstMovies.length) {
+    if (firstMovies?.length) {
       const IMAGES = []
       for (let i = 0; i < 5; i++) {
         IMAGES.push({
@@ -48,19 +48,22 @@ const MainContent = () => {
   }, [movies])
 
   return (
-    <div className="main-content">
-      <SlideShow images={images} />
+    movies &&
+    images && (
+      <div className="main-content">
+        <SlideShow images={images} />
 
-      <div className="grid-movie-title">
-        <div className="movie-type">{formatHeaderItems(movieType)}</div>
+        <div className="grid-movie-title">
+          <div className="movie-type">{formatHeaderItems(movieType)}</div>
 
-        <div className="paginate">
-          <Paginate page={page} paginate={paginate} pages={pages} />
+          <div className="paginate">
+            <Paginate page={page} paginate={paginate} pages={pages} />
+          </div>
         </div>
-      </div>
 
-      <Grid />
-    </div>
+        <Grid />
+      </div>
+    )
   )
 }
 

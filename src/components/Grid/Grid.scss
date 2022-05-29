@@ -60,11 +60,12 @@
   bottom: 0;
   padding-left: 10px;
   padding-right: 10px;
-  width: 320px;
+  width: 100%;
   text-align: left;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  background: rgba(0, 0, 0, 0.5);
 
   .grid-detail-title {
     font-size: 14px;

@@ -8,9 +8,10 @@ import {
   MOVIE_LOAD_NEXT_FAILED,
   MOVIE_LOAD_NEXT_REQUEST,
   MOVIE_LOAD_NEXT_SUCCESS,
-  MOVIE_TYPE
+  SET_MOVIE_TYPE
 } from 'redux/actions/movieTypes'
 import axios from 'axios'
+import { setError } from 'redux/actions/errorActions'
 
 export const fetchInitialMovies = (type) => async (dispatch) => {
   try {
@@ -25,11 +26,16 @@ export const fetchInitialMovies = (type) => async (dispatch) => {
 
     dispatch({ type: MOVIE_INITIAL_SUCCESS, payload })
   } catch (error) {
-    dispatch({
-      type: MOVIE_INITIAL_FAILED,
-      payload:
-        error.response && error.response.data.message ? error.response.data.message : error.message
-    })
+    const payload = {
+      message: error.response?.data?.status_message
+        ? error.response.data.status_message
+        : error.response?.data?.message
+        ? error.response.data.message
+        : error.message,
+      statusCode: error.response.status
+    }
+    dispatch({ type: MOVIE_INITIAL_FAILED, payload })
+    dispatch(setError({ ...payload, type: MOVIE_INITIAL_FAILED }))
   }
 }
 
@@ -46,11 +52,16 @@ export const fetchMoreMoviesByScroll = (type, pageNumber) => async (dispatch) =>
 
     dispatch({ type: MOVIE_LOAD_BY_SCROLL_SUCCESS, payload })
   } catch (error) {
-    dispatch({
-      type: MOVIE_LOAD_BY_SCROLL_FAILED,
-      payload:
-        error.response && error.response.data.message ? error.response.data.message : error.message
-    })
+    const payload = {
+      message: error.response?.data?.status_message
+        ? error.response.data.status_message
+        : error.response?.data?.message
+        ? error.response.data.message
+        : error.message,
+      statusCode: error.response.status
+    }
+    dispatch({ type: MOVIE_LOAD_BY_SCROLL_FAILED, payload })
+    dispatch(setError({ ...payload, type: MOVIE_LOAD_BY_SCROLL_FAILED }))
   }
 }
 
@@ -67,14 +78,19 @@ export const fetchNextMovies = (type, pageNumber) => async (dispatch) => {
 
     dispatch({ type: MOVIE_LOAD_NEXT_SUCCESS, payload })
   } catch (error) {
-    dispatch({
-      type: MOVIE_LOAD_NEXT_FAILED,
-      payload:
-        error.response && error.response.data.message ? error.response.data.message : error.message
-    })
+    const payload = {
+      message: error.response?.data?.status_message
+        ? error.response.data.status_message
+        : error.response?.data?.message
+        ? error.response.data.message
+        : error.message,
+      statusCode: error.response.status
+    }
+    dispatch({ type: MOVIE_LOAD_NEXT_FAILED, payload })
+    dispatch(setError({ ...payload, type: MOVIE_LOAD_NEXT_FAILED }))
   }
 }
 
 export const setMovieType = (movieType) => async (dispatch) => {
-  dispatch({ type: MOVIE_TYPE, payload: { movieType, page: 1 } })
+  dispatch({ type: SET_MOVIE_TYPE, payload: { movieType, page: 1 } })
 }

@@ -127,7 +127,8 @@ const Header = () => {
     <>
       {showHeader ? (
         <div className="header-nav-wrapper">
-          <div className="header-bar"></div>
+          <div className="header-bar" />
+
           <div className="header-navbar">
             <Link to="/">
               <div className="header-image">

@@ -8,7 +8,6 @@ import { setPathAndUrl } from 'redux/actions/routesActions'
 import { DETAILS_RESET } from 'redux/actions/detailsTypes'
 
 import MainContent from 'components/MainContent'
-import Search from 'components/Search'
 import Spinner from 'components/Spinner'
 
 import 'screens/MainScreen/MainScreen.scss'
@@ -18,7 +17,6 @@ const MainScreen = (props) => {
   const { success: detailsSuccess } = useSelector((state) => state.details)
   const { message: errorMessage } = useSelector((state) => state.errors)
   const { loading, movieType, page, pages } = useSelector((state) => state.movieList)
-  const { results } = useSelector((state) => state.search)
 
   const [initialLoading, setInitialLoading] = useState(false)
 
@@ -75,7 +73,7 @@ const MainScreen = (props) => {
     <>
       {!errorMessage && (
         <div className="main" onScroll={handleScroll} ref={mainRef}>
-          {initialLoading ? <Spinner /> : results?.length ? <Search /> : <MainContent />}
+          {initialLoading ? <Spinner /> : <MainContent />}
           <div ref={bottomLineRef} />
         </div>
       )}

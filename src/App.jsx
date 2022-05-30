@@ -10,12 +10,14 @@ import Header from 'components/Header'
 
 import DetailsScreen from 'screens/DetailsScreen'
 import MainScreen from 'screens/MainScreen'
+import SearchScreen from 'screens/SearchScreen'
 
 import 'App.scss'
 
 const ROUTES_ARRAY = [
   { id: 0, path: '/', element: <MainScreen /> },
-  { id: 1, path: '/:id/:name/details', element: <DetailsScreen /> }
+  { id: 1, path: '/:id/:name/details', element: <DetailsScreen /> },
+  { id: 2, path: '/search', element: <SearchScreen /> }
 ]
 
 const App = (props) => {

@@ -54,6 +54,7 @@ const Header = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const matchDetailsRoute = useMatch('/:id/:name/details')
+  const matchSearchRoute = useMatch('/search')
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
@@ -136,13 +137,11 @@ const Header = () => {
   )
 
   /* Hide header in error screen
-   * (ie nor in MainScreen nor in DetailsScreen nor in SearchScreen)
+   * (ie nor in DetailsScreen nor in MainScreen nor in SearchScreen)
    */
   useEffect(
     () =>
-      setShowHeader(
-        (prev) => matchDetailsRoute || location.pathname === '/' || location.pathname === '/search'
-      ),
+      setShowHeader((prev) => matchDetailsRoute || matchSearchRoute || location.pathname === '/'),
     [location.pathname, matchDetailsRoute]
   )
 

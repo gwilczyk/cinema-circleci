@@ -9,10 +9,10 @@ import Rating from 'components/Rating'
 import { formatMovieTitle } from 'utils'
 
 import 'components/Grid/Grid.scss'
-import 'components/Search/Search.scss'
+import 'screens/SearchScreen/SearchScreen.scss'
 
-const Search = () => {
-  const { query, results } = useSelector((state) => state.search)
+const SearchScreen = () => {
+  const { query, results: searchResults } = useSelector((state) => state.search)
 
   return (
     <div className="search-keyword">
@@ -21,7 +21,7 @@ const Search = () => {
         <span className="grid-text2">{query}</span>
       </div>
       <div className="grid">
-        {results.map((movie) => (
+        {searchResults.map((movie) => (
           <Fragment key={uuidv4()}>
             {movie.poster_path && (
               <LazyImage
@@ -55,4 +55,4 @@ const Search = () => {
   )
 }
 
-export default Search
+export default SearchScreen

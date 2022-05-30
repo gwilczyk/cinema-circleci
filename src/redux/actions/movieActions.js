@@ -22,7 +22,7 @@ export const fetchInitialMovies = (type) => async (dispatch) => {
     )
 
     const { page, results, total_pages } = data
-    const payload = { page, results, total_pages }
+    const payload = { movies: results, page, pages: total_pages }
 
     dispatch({ type: MOVIE_INITIAL_SUCCESS, payload })
   } catch (error) {
@@ -41,14 +41,14 @@ export const fetchInitialMovies = (type) => async (dispatch) => {
 
 export const fetchMoreMoviesByScroll = (type, pageNumber) => async (dispatch) => {
   try {
-    dispatch({ type: MOVIE_LOAD_BY_SCROLL_REQUEST })
+    dispatch({ type: MOVIE_LOAD_BY_SCROLL_REQUEST, payload: { page: pageNumber } })
 
     const { data } = await axios.get(
       `https://api.themoviedb.org/3/movie/${type}?api_key=${process.env.REACT_APP_API_KEY}&language=fr-FR&page=${pageNumber}`
     )
 
     const { page, results, total_pages } = data
-    const payload = { page, results, total_pages }
+    const payload = { movies: results, page, pages: total_pages }
 
     dispatch({ type: MOVIE_LOAD_BY_SCROLL_SUCCESS, payload })
   } catch (error) {
@@ -67,14 +67,14 @@ export const fetchMoreMoviesByScroll = (type, pageNumber) => async (dispatch) =>
 
 export const fetchNextMovies = (type, pageNumber) => async (dispatch) => {
   try {
-    dispatch({ type: MOVIE_LOAD_NEXT_REQUEST })
+    dispatch({ type: MOVIE_LOAD_NEXT_REQUEST, payload: { page: pageNumber } })
 
     const { data } = await axios.get(
       `https://api.themoviedb.org/3/movie/${type}?api_key=${process.env.REACT_APP_API_KEY}&language=fr-FR&page=${pageNumber}`
     )
 
     const { page, results, total_pages } = data
-    const payload = { page, results, total_pages }
+    const payload = { movies: results, page, pages: total_pages }
 
     dispatch({ type: MOVIE_LOAD_NEXT_SUCCESS, payload })
   } catch (error) {

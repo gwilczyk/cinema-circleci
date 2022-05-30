@@ -1,70 +1,37 @@
-# Getting Started with Create React App
+# Cinema-CircleCI
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Création de l'application frontend «Cinema-CircleCI» sous React.js et Redux.\
+Le développement de cette application aura été l'occasion de mettre en place un pipeline de CI/CD (à l'aide de Circle-CI et de Terraform)\
+et d'automatiser son déploiement sous AWS S3 et CloudFront.\
+À cette occasion, de « bonnes pratiques » d'utilisation des branches sous GitHub (main, staging, development avec sous-branches pour le développement de chaque feature) auront été suivies.\
+La remontée des erreurs (en production) est gérée par Sentry et les différentes notifications de build sont centralisées sous un canal Slack. 
 
-## Available Scripts
+## Adresses de déploiement
 
-In the project directory, you can run:
+L'application est disponible en 3 versions :
 
-### `yarn start`
+### `version de développement`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Contient les dernières modifications :\
+[https://cinema-circleci-development](https://d2z5bar3s1aloh.cloudfront.net/)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### `version de staging`
 
-### `yarn test`
+Version similaire à cette de production (parce que je développe seul et que j'ai le bonheur d'être toujours d'accord avec moi-même ;-P) :\
+[https://cinema-circleci-staging](https://d1pwdeiyvkxrmr.cloudfront.net)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### `version de production`
 
-### `yarn build`
+Et voici l'application sous sa version finale :\
+[https://cinema-circleci-production](https://d3aahwnj1lw9c5.cloudfront.net)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Quelques remarques
 
-### `yarn eject`
+Le suivi de ce [tutoriel](https://www.udemy.com/course/build-a-modern-react-and-redux-app-with-circleci-cicd-aws/?utm_source=adwords&utm_medium=udemyads&utm_campaign=LongTail_la.EN_cc.ROW&utm_content=deal4584&utm_term=_._ag_77879424134_._ad_535397245863_._kw__._de_c_._dm__._pl__._ti_dsa-1007766171312_._li_9055186_._pd__._&matchtype=&gclid=Cj0KCQjw1tGUBhDXARIsAIJx01k_JnVEm0FjeAkcDuK6RfsrVi_gcODA24N_QpYwaLF25lU_njx1jWcaAi9REALw_wcB) Udemy par Uzochukwu Eddie Odozi aura été riche d'enseignement sur une utilisation plus « professionnelle » de GitHub et sur le côté « devOps » du CI/CD et du déploiement automatique.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Par contre, l'utilisation que fait l'auteur de Redux avec les méthodes connect(), mapStateToProps, mapDispatchToProps me semble obsolète et j'ai profité des hooks React-Redux (useDispatch, useSelector) pour écrire une version du code plus d'actualité.\
+De la même façon, l'auteur m'a semblé ne pas utiliser à sa juste valeur le state centralisé de l'application par Redux, en adjoignant des states locaux redondant dans plusieurs composants. Ce double emploi aura été évité dans ma version du code.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Bien sûr, ce code est toujours en développement et je reste ouvert à toute critique constructive visant à l'améliorer.

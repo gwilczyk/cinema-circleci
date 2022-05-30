@@ -1,6 +1,6 @@
 /* eslint-disable multiline-ternary */
 import React, { useEffect, useState } from 'react'
-import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom'
+import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { setError } from 'redux/actions/errorActions'
@@ -13,6 +13,7 @@ import { formatHeaderItems } from 'utils'
 
 import logo from 'assets/cinema-logo.svg'
 import 'components/Header/Header.scss'
+import { SEARCH_QUERY_RESET } from 'redux/actions/searchTypes'
 
 const HEADER_LIST = [
   {
@@ -42,6 +43,7 @@ const Header = () => {
   const { message: errorMessage, statusCode: errorStatus } = useSelector((state) => state.errors)
   const { movieType } = useSelector((state) => state.movieList)
   const { path, routes_array, url } = useSelector((state) => state.routes)
+  const { success: searchSuccess } = useSelector((state) => state.search)
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [term, setTerm] = useState('')
@@ -52,13 +54,24 @@ const Header = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const matchDetailsRoute = useMatch('/:id/:name/details')
+  const matchSearchRoute = useMatch('/search')
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
-  const handleClick = (type) => {
+  const resetSearchInput = () => {
+    dispatch({ type: SEARCH_QUERY_RESET })
+    setTerm((prev) => '')
+  }
+
+  const handleLogoClick = () => {
+    resetSearchInput()
+    navigate('/')
+  }
+
+  const handleNavItemClick = (type) => {
     isMenuOpen && toggleMenu()
+    resetSearchInput()
     dispatch(setMovieType(type))
-    /* navigate is used to leave Details.jsx back to Main.jsx */
     navigate('/')
   }
 
@@ -100,8 +113,12 @@ const Header = () => {
   }, [term])
 
   useEffect(() => {
-    dispatch(searchMovies(debouncedTerm))
+    debouncedTerm ? dispatch(searchMovies({ page: 1, query: debouncedTerm })) : resetSearchInput()
   }, [debouncedTerm])
+
+  useEffect(() => {
+    searchSuccess && navigate('/search')
+  }, [searchSuccess])
 
   /* Handle menu opening */
   useEffect(() => {
@@ -113,13 +130,18 @@ const Header = () => {
   }, [isMenuOpen])
 
   /* Disable search input in Details pages */
-  useEffect(() => setDisableSearchInput((prev) => location.pathname !== '/'), [location.pathname])
+  useEffect(
+    () =>
+      setDisableSearchInput((prev) => location.pathname !== '/' && location.pathname !== '/search'),
+    [location.pathname]
+  )
 
   /* Hide header in error screen
-   * (ie nor in MainScreen nor in DetailsScreen)
+   * (ie nor in DetailsScreen nor in MainScreen nor in SearchScreen)
    */
   useEffect(
-    () => setShowHeader((prev) => matchDetailsRoute || location.pathname === '/'),
+    () =>
+      setShowHeader((prev) => matchDetailsRoute || matchSearchRoute || location.pathname === '/'),
     [location.pathname, matchDetailsRoute]
   )
 
@@ -130,11 +152,11 @@ const Header = () => {
           <div className="header-bar" />
 
           <div className="header-navbar">
-            <Link to="/">
+            <div onClick={handleLogoClick}>
               <div className="header-image">
                 <img src={logo} alt="" />
               </div>
-            </Link>
+            </div>
 
             <div
               className={`${isMenuOpen ? 'header-menu-toggle is-active' : 'header-menu-toggle'}`}
@@ -151,7 +173,7 @@ const Header = () => {
                 <li
                   key={id}
                   className={movieType === type ? 'header-nav-item active-item' : 'header-nav-item'}
-                  onClick={() => handleClick(type)}
+                  onClick={() => handleNavItemClick(type)}
                 >
                   <span className="header-list-name">
                     <i className={iconClass} />
